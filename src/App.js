@@ -1,25 +1,56 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState, useEffect } from "react";
 
-function App() {
+import ProductCard from "./ProductCard";
+import SearchIcon from "./search.svg";
+import "./App.css";
+
+const API_URL = "http://www.omdbapi.com?apikey=b6003d8a";
+
+const App = () => {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [products, setproducts] = useState([]);
+
+  useEffect(() => {
+    searchproducts("Django");
+  }, []);
+
+  const searchproducts = async (title) => {
+    const response = await fetch(`${API_URL}&s=${title}`);
+    const data = await response.json();
+
+    setproducts(data.Search);
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="app">
+      <h1>NGRock</h1>
+
+      <div className="search">
+        <input
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          placeholder="Поиск"
+        />
+        <img
+          src={SearchIcon}
+          alt="search"
+          onClick={() => searchproducts(searchTerm)}
+        />
+      </div>
+
+      {products?.length > 0 ? (
+        <div className="container">
+          {products.map((product) => (
+            <ProductCard product={product} />
+          ))}
+        </div>
+      ) : (
+        <div className="empty">
+          <h2>Не найдено ни одного объявления</h2>
+        </div>
+      )}
     </div>
   );
-}
+};
 
 export default App;
